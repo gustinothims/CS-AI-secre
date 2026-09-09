@@ -1,53 +1,80 @@
+/* Apple iOS dark-mode system palette */
 :root {
-  --bg: #0a0a0c;
-  --surface: #17171b;
-  --surface-2: #1e1e23;
-  --border: #29292f;
-  --text: #f5f5f7;
-  --text-dim: #9a9aa2;
-  --text-faint: #63636b;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-2: #2c2c2e;
+  --separator: rgba(255, 255, 255, 0.14);
+  --label: #ffffff;
+  --label-secondary: rgba(235, 235, 245, 0.6);
+  --label-tertiary: rgba(235, 235, 245, 0.32);
 
-  --accent: #34d399;
-  --red: #f87171;
+  --accent: #30d158;
+  --blue: #0a84ff;
+  --red: #ff453a;
 }
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  background: var(--bg);
 }
 
 body {
   margin: 0;
+  min-height: 100vh;
   background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  color: var(--label);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 .app-shell {
-  max-width: 420px;
+  max-width: 430px;
   margin: 0 auto;
-  padding: 40px 18px;
+  padding: 20px 16px 130px;
 }
+
+/* Header — iOS "Large Title" */
 
 .top-header {
-  margin-bottom: 20px;
+  padding: 12px 4px 24px;
 }
 
-.brand-name {
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+.top-header h1 {
   margin: 0;
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-/* Calendar card */
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--label-secondary);
+}
 
-.calendar-card {
+/* Views */
+
+.view.hidden {
+  display: none;
+}
+
+/* Shared card look */
+
+.calendar-card,
+.news-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 26px;
-  padding: 20px 16px 16px;
+  border: 0.5px solid var(--separator);
+  border-radius: 20px;
+  padding: 18px 16px 14px;
 }
+
+/* Calendar */
 
 .calendar-topbar {
   display: flex;
@@ -57,8 +84,8 @@ body {
 }
 
 .calendar-topbar h2 {
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 700;
   margin: 0;
   letter-spacing: -0.01em;
 }
@@ -66,7 +93,7 @@ body {
 .nav-btn {
   background: var(--surface-2);
   border: none;
-  color: var(--text);
+  color: var(--label);
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -74,11 +101,15 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .nav-btn:hover {
-  background: #29292f;
+  background: #3a3a3c;
+}
+
+.nav-btn:active {
+  transform: scale(0.9);
 }
 
 .weekdays {
@@ -86,16 +117,17 @@ body {
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
   font-size: 10.5px;
-  color: var(--text-faint);
+  color: var(--label-tertiary);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  font-weight: 600;
   margin-bottom: 6px;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
+  gap: 3px;
 }
 
 .day {
@@ -105,10 +137,11 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  color: var(--text);
+  font-weight: 500;
+  color: var(--label);
   border-radius: 50%;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
 .day.empty {
@@ -119,9 +152,13 @@ body {
   background: var(--surface-2);
 }
 
+.day:not(.empty):active {
+  transform: scale(0.9);
+}
+
 .day.today {
   background: var(--accent);
-  color: #06281c;
+  color: #04150a;
   font-weight: 700;
 }
 
@@ -135,7 +172,160 @@ body {
 }
 
 .day.today .dot {
-  background: #06281c;
+  background: #04150a;
+}
+
+/* News — grouped inset list, iOS Settings style */
+
+.news-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.news-card-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.news-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 4px;
+  border-bottom: 0.5px solid var(--separator);
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.news-item.last {
+  border-bottom: none;
+}
+
+.news-item:hover {
+  background: var(--surface-2);
+  margin: 0 -8px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border-radius: 10px;
+}
+
+.news-item-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.news-item-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.news-item-date {
+  font-size: 11px;
+  color: var(--label-tertiary);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+}
+
+.news-item-preview {
+  font-size: 13px;
+  color: var(--label-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.news-item-chevron {
+  flex-shrink: 0;
+  color: var(--label-tertiary);
+}
+
+.news-empty {
+  font-size: 13px;
+  color: var(--label-tertiary);
+  text-align: center;
+  padding: 30px 0;
+}
+
+/* Bottom nav */
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  width: calc(100% - 36px);
+  max-width: 394px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: rgba(28, 28, 30, 0.78);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 0.5px solid var(--separator);
+  border-radius: 999px;
+  padding: 10px 14px;
+  z-index: 15;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--label-tertiary);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 14px;
+  transition: color 0.15s ease;
+}
+
+.nav-tab.is-active {
+  color: var(--accent);
+}
+
+.nav-fab {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  margin-top: -30px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #04150a;
+  border: 4px solid var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.15s ease;
+}
+
+.nav-fab:hover {
+  transform: scale(1.05);
+}
+
+.nav-fab:active {
+  transform: scale(0.93);
 }
 
 /* Overlay + panels */
@@ -143,8 +333,8 @@ body {
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 10;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 20;
 }
 
 .panel {
@@ -152,23 +342,22 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  max-width: 420px;
+  max-width: 430px;
   margin: 0 auto;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 0.5px solid var(--separator);
   border-bottom: none;
-  border-top-left-radius: 26px;
-  border-top-right-radius: 26px;
-  padding: 10px 20px 26px;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
-  z-index: 20;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 10px 18px 30px;
+  z-index: 30;
 }
 
 .panel-handle {
   width: 36px;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--border);
+  height: 5px;
+  border-radius: 3px;
+  background: var(--surface-2);
   margin: 0 auto 16px;
 }
 
@@ -177,20 +366,22 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
+  gap: 12px;
 }
 
 .panel-header h2 {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 17px;
+  font-weight: 700;
   margin: 0;
   letter-spacing: -0.01em;
 }
 
 .close-btn {
+  flex-shrink: 0;
   background: var(--surface-2);
   border: none;
   font-size: 18px;
-  color: var(--text-dim);
+  color: var(--label-secondary);
   cursor: pointer;
   line-height: 1;
   width: 28px;
@@ -203,62 +394,103 @@ body {
 
 .panel-text {
   white-space: pre-wrap;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--label);
   margin: 0 0 20px;
+}
+
+.panel-meta {
+  font-size: 11px;
+  color: var(--label-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin: -6px 0 12px;
 }
 
 .panel-empty {
-  font-size: 14px;
-  color: var(--text-faint);
+  font-size: 15px;
+  color: var(--label-tertiary);
   margin: 0 0 20px;
 }
 
-#editText {
+.text-input,
+#editText,
+#newsTitleInput,
+#newsBodyInput {
   width: 100%;
   font-family: inherit;
-  font-size: 14px;
-  color: var(--text);
+  font-size: 15px;
+  color: var(--label);
   background: var(--surface-2);
-  border: 1px solid var(--border);
+  border: none;
   border-radius: 12px;
-  padding: 11px 12px;
-  margin-bottom: 16px;
+  padding: 11px 13px;
+  margin-bottom: 10px;
+}
+
+#editText,
+#newsBodyInput {
   resize: vertical;
+  margin-bottom: 16px;
+}
+
+.text-input:focus,
+#editText:focus,
+#newsTitleInput:focus,
+#newsBodyInput:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: -1px;
 }
 
 .panel-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 
 .panel-actions button {
-  flex: 1;
-  padding: 12px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
+  border: none;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  font-family: inherit;
 }
 
 .primary-btn {
-  background: var(--accent) !important;
-  color: #06281c !important;
-  border-color: var(--accent) !important;
+  flex: 1;
+  background: var(--accent);
+  color: #04150a;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 13px 16px;
+  border-radius: 14px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.primary-btn:hover {
+  opacity: 0.88;
+}
+
+.primary-btn:active {
+  transform: scale(0.98);
+}
+
+.ghost-btn,
+.danger-btn {
+  background: none;
+  color: var(--label-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 13px 14px;
 }
 
 .danger-btn {
-  color: var(--red) !important;
-  border-color: rgba(248, 113, 113, 0.35) !important;
+  color: var(--red);
 }
 
-.panel-actions button:hover {
-  opacity: 0.85;
+.ghost-btn:hover,
+.danger-btn:hover {
+  opacity: 0.7;
 }
 
 .hidden {

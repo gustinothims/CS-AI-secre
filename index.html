@@ -3,36 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Schedule</title>
+<title>CS AI Schedule</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
     <header class="top-header">
-      <h1 class="brand-name">Schedule</h1>
+      <h1>CS AI SCHEDULE</h1>
+      <p class="subtitle">Computer Science AI Club</p>
     </header>
 
-    <section class="calendar-card">
-      <div class="calendar-topbar">
-        <button id="prevMonth" class="nav-btn" aria-label="Previous month">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <h2 id="monthLabel"></h2>
-        <button id="nextMonth" class="nav-btn" aria-label="Next month">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-        </button>
-      </div>
+    <section id="scheduleView" class="view">
+      <div class="calendar-card">
+        <div class="calendar-topbar">
+          <button id="prevMonth" class="nav-btn" aria-label="Previous month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <h2 id="monthLabel"></h2>
+          <button id="nextMonth" class="nav-btn" aria-label="Next month">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
 
-      <div class="weekdays">
-        <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-      </div>
+        <div class="weekdays">
+          <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+        </div>
 
-      <div id="calendarGrid" class="grid"></div>
+        <div id="calendarGrid" class="grid"></div>
+      </div>
+    </section>
+
+    <section id="newsView" class="view hidden">
+      <div class="news-card">
+        <div class="news-card-header">
+          <h2>News</h2>
+        </div>
+        <div id="newsList" class="news-list"></div>
+        <div id="newsEmpty" class="news-empty hidden">No news posted yet.</div>
+      </div>
     </section>
   </div>
 
+  <nav class="bottom-nav">
+    <button id="tabSchedule" class="nav-tab is-active" data-tab="schedule">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+      <span>Schedule</span>
+    </button>
+
+    <button id="fabAdd" class="nav-fab" aria-label="Add">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+
+    <button id="tabNews" class="nav-tab" data-tab="news">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h13a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4z"/><path d="M8 8h9M8 12h9M8 16h5"/></svg>
+      <span>News</span>
+    </button>
+  </nav>
+
   <div id="overlay" class="overlay hidden"></div>
 
+  <!-- Schedule: view / edit a day's description -->
   <div id="detailPanel" class="panel hidden">
     <div class="panel-handle"></div>
     <div class="panel-header">
@@ -57,6 +87,35 @@
     <div class="panel-actions">
       <button id="saveBtn" class="primary-btn">Save</button>
       <button id="cancelEditBtn" class="ghost-btn">Cancel</button>
+    </div>
+  </div>
+
+  <!-- News: view / edit a post -->
+  <div id="newsDetailPanel" class="panel hidden">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <h2 id="newsPanelTitle"></h2>
+      <button id="closeNewsPanel" class="close-btn" aria-label="Close">&times;</button>
+    </div>
+    <p id="newsPanelDate" class="panel-meta"></p>
+    <p id="newsPanelBody" class="panel-text"></p>
+    <div class="panel-actions">
+      <button id="newsEditBtn" class="primary-btn">Edit</button>
+      <button id="newsDeleteBtn" class="danger-btn">Delete</button>
+    </div>
+  </div>
+
+  <div id="newsEditPanel" class="panel hidden">
+    <div class="panel-handle"></div>
+    <div class="panel-header">
+      <h2 id="newsEditHeading">Post news</h2>
+      <button id="closeNewsEditPanel" class="close-btn" aria-label="Close">&times;</button>
+    </div>
+    <input id="newsTitleInput" class="text-input" type="text" placeholder="Title" maxlength="80" />
+    <textarea id="newsBodyInput" rows="5" placeholder="What's the news?"></textarea>
+    <div class="panel-actions">
+      <button id="newsSaveBtn" class="primary-btn">Save</button>
+      <button id="newsCancelBtn" class="ghost-btn">Cancel</button>
     </div>
   </div>
 
