@@ -103,6 +103,11 @@ function promptPassword() {
   return prompt("Enter password to save changes:");
 }
 
+function serverErrorMessage(result, fallback) {
+  const detail = result.data && (result.data.detail || result.data.error);
+  return detail ? `${fallback}\n\n(${detail})` : fallback;
+}
+
 /* ---------- helpers ---------- */
 
 function dateKey(year, month, day) {
@@ -250,7 +255,7 @@ async function saveEdit() {
     return;
   }
   if (!result.ok) {
-    alert("Something went wrong saving. Please try again.");
+    alert(serverErrorMessage(result, "Something went wrong saving. Please try again."));
     return;
   }
 
@@ -270,7 +275,7 @@ async function deleteEntry() {
     return;
   }
   if (!result.ok) {
-    alert("Something went wrong deleting. Please try again.");
+    alert(serverErrorMessage(result, "Something went wrong deleting. Please try again."));
     return;
   }
 
@@ -400,7 +405,7 @@ async function saveNewsPost() {
     return;
   }
   if (!result.ok) {
-    alert("Something went wrong saving. Please try again.");
+    alert(serverErrorMessage(result, "Something went wrong saving. Please try again."));
     return;
   }
 
@@ -420,7 +425,7 @@ async function deleteNewsPost() {
     return;
   }
   if (!result.ok) {
-    alert("Something went wrong deleting. Please try again.");
+    alert(serverErrorMessage(result, "Something went wrong deleting. Please try again."));
     return;
   }
 

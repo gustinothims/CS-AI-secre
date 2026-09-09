@@ -1,14 +1,13 @@
-const { put, head } = require("@vercel/blob");
+const { put, list } = require("@vercel/blob");
 
 async function readJSON(pathname, fallback) {
-  try {
-    const meta = await head(pathname);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (!res.ok) return fallback;
-    return await res.json();
-  } catch {
-    return fallback;
-  }
+  const { blobs } = await list({ prefix: pathname, limit: 1 });
+  const match = blobs.find((b) => b.pathname === pathname);
+  if (!match) return fallback;
+
+  const res = await fetch(match.url, { cache: "no-store" });
+  if (!res.ok) return fallback;
+  return res.json();
 }
 
 async function writeJSON(pathname, data) {
