@@ -13,6 +13,8 @@ const overlay = document.getElementById("overlay");
 
 /* Elements: calendar */
 const monthLabel = document.getElementById("monthLabel");
+const monthLabelText = document.getElementById("monthLabelText");
+const jumpDot = document.getElementById("jumpDot");
 const calendarGrid = document.getElementById("calendarGrid");
 const prevMonthBtn = document.getElementById("prevMonth");
 const nextMonthBtn = document.getElementById("nextMonth");
@@ -133,44 +135,60 @@ tabNews.addEventListener("click", () => setTab("news"));
 
 function renderCalendar() {
   const entries = loadEntries();
-  monthLabel.textContent = new Date(viewYear, viewMonth).toLocaleDateString(undefined, {
+  monthLabelText.textContent = new Date(viewYear, viewMonth).toLocaleDateString(undefined, {
     month: "long",
     year: "numeric",
   });
+
+  const isCurrentMonth = viewYear === today.getFullYear() && viewMonth === today.getMonth();
+  jumpDot.classList.toggle("hidden", isCurrentMonth);
 
   calendarGrid.innerHTML = "";
 
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
   const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const prevMonthDays = new Date(viewYear, viewMonth, 0).getDate();
+  const totalCells = Math.ceil((firstDay + daysInMonth) / 7) * 7;
 
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement("div");
-    empty.className = "day empty";
-    calendarGrid.appendChild(empty);
-  }
-
-  for (let day = 1; day <= daysInMonth; day++) {
+  for (let i = 0; i < totalCells; i++) {
+    const dayNum = i - firstDay + 1;
     const cell = document.createElement("div");
-    cell.className = "day";
-    cell.textContent = day;
 
-    const key = dateKey(viewYear, viewMonth, day);
+    if (dayNum < 1) {
+      cell.className = "day muted";
+      cell.textContent = prevMonthDays + dayNum;
+    } else if (dayNum > daysInMonth) {
+      cell.className = "day muted";
+      cell.textContent = dayNum - daysInMonth;
+    } else {
+      cell.className = "day";
+      cell.textContent = dayNum;
 
-    const isToday =
-      viewYear === today.getFullYear() &&
-      viewMonth === today.getMonth() &&
-      day === today.getDate();
-    if (isToday) cell.classList.add("today");
+      const key = dateKey(viewYear, viewMonth, dayNum);
+      const isToday = isCurrentMonth && dayNum === today.getDate();
+      if (isToday) cell.classList.add("today");
 
-    if (entries[key]) {
-      const dot = document.createElement("span");
-      dot.className = "dot";
-      cell.appendChild(dot);
+      if (entries[key]) {
+        const dot = document.createElement("span");
+        dot.className = "dot";
+        cell.appendChild(dot);
+      }
+
+      cell.addEventListener("click", () => openDetail(key, viewYear, viewMonth, dayNum));
     }
 
-    cell.addEventListener("click", () => openDetail(key, viewYear, viewMonth, day));
     calendarGrid.appendChild(cell);
   }
+
+  calendarGrid.classList.remove("anim");
+  void calendarGrid.offsetWidth;
+  calendarGrid.classList.add("anim");
+}
+
+function jumpToToday() {
+  viewYear = today.getFullYear();
+  viewMonth = today.getMonth();
+  renderCalendar();
 }
 
 function openDetail(key, year, month, day) {
@@ -265,6 +283,8 @@ nextMonthBtn.addEventListener("click", () => {
   }
   renderCalendar();
 });
+
+monthLabel.addEventListener("click", jumpToToday);
 
 closePanel.addEventListener("click", closeAllPanels);
 overlay.addEventListener("click", closeAllPanels);

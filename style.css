@@ -93,10 +93,28 @@ body {
 }
 
 .calendar-topbar h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 16px;
   font-weight: 700;
   margin: 0;
   letter-spacing: -0.01em;
+  cursor: pointer;
+  padding: 4px 10px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.calendar-topbar h2:hover {
+  background: var(--surface-2);
+}
+
+.jump-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
 }
 
 .nav-btn {
@@ -139,29 +157,47 @@ body {
   gap: 3px;
 }
 
+@keyframes gridFade {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.grid.anim {
+  animation: gridFade 0.2s ease;
+}
+
 .day {
   position: relative;
   aspect-ratio: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--label);
   border-radius: 50%;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.day.empty {
+.day.muted {
+  color: var(--label-tertiary);
+  font-weight: 500;
   cursor: default;
 }
 
-.day:not(.empty):hover {
+.day:not(.muted):hover {
   background: var(--surface-2);
 }
 
-.day:not(.empty):active {
+.day:not(.muted):active {
   transform: scale(0.9);
 }
 
