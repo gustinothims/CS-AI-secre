@@ -3,6 +3,7 @@ const STORAGE_KEY = "scheduleEntries";
 const NEWS_KEY = "scheduleNews";
 
 /* Elements: shell */
+const todayLabel = document.getElementById("todayLabel");
 const scheduleView = document.getElementById("scheduleView");
 const newsView = document.getElementById("newsView");
 const tabSchedule = document.getElementById("tabSchedule");
@@ -34,6 +35,7 @@ const closeEditPanel = document.getElementById("closeEditPanel");
 
 /* Elements: news */
 const newsList = document.getElementById("newsList");
+const newsCount = document.getElementById("newsCount");
 const newsEmpty = document.getElementById("newsEmpty");
 
 const newsDetailPanel = document.getElementById("newsDetailPanel");
@@ -283,6 +285,7 @@ function formatPostDate(iso) {
 function renderNews() {
   const posts = loadNews();
   newsList.innerHTML = "";
+  newsCount.textContent = `${posts.length} post${posts.length === 1 ? "" : "s"}`;
 
   if (posts.length === 0) {
     newsEmpty.classList.remove("hidden");
@@ -407,6 +410,12 @@ fabAdd.addEventListener("click", () => {
 });
 
 /* ---------- init ---------- */
+
+todayLabel.textContent = today.toLocaleDateString(undefined, {
+  weekday: "long",
+  month: "long",
+  day: "numeric",
+});
 
 renderCalendar();
 renderNews();

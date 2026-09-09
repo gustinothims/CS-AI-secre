@@ -40,20 +40,29 @@ body {
 /* Header — iOS "Large Title" */
 
 .top-header {
-  padding: 12px 4px 24px;
+  padding: 14px 4px 26px;
+}
+
+.today-label {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
 }
 
 .top-header h1 {
   margin: 0;
-  font-size: 30px;
+  font-size: 34px;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 
 .subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
+  margin: 6px 0 0;
+  font-size: 15px;
   font-weight: 500;
   color: var(--label-secondary);
 }
@@ -186,10 +195,16 @@ body {
 }
 
 .news-card-header h2 {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 22px;
+  font-weight: 800;
   margin: 0;
   letter-spacing: -0.01em;
+}
+
+.news-count {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--label-secondary);
 }
 
 .news-list {
@@ -202,7 +217,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 12px 4px;
+  padding: 16px 2px;
   border-bottom: 0.5px solid var(--separator);
   cursor: pointer;
   transition: background 0.1s ease;
@@ -214,10 +229,6 @@ body {
 
 .news-item:hover {
   background: var(--surface-2);
-  margin: 0 -8px;
-  padding-left: 12px;
-  padding-right: 12px;
-  border-radius: 10px;
 }
 
 .news-item-text {
@@ -226,23 +237,21 @@ body {
 }
 
 .news-item-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 2px;
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 4px;
   letter-spacing: -0.01em;
 }
 
 .news-item-date {
-  font-size: 11px;
-  color: var(--label-tertiary);
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  font-size: 14px;
+  color: var(--accent);
+  margin-bottom: 6px;
   font-weight: 600;
 }
 
 .news-item-preview {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--label-secondary);
   white-space: nowrap;
   overflow: hidden;

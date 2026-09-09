@@ -9,8 +9,9 @@
 <body>
   <div class="app-shell">
     <header class="top-header">
-      <h1>CS AI SCHEDULE</h1>
-      <p class="subtitle">Computer Science AI Club</p>
+      <p class="today-label" id="todayLabel"></p>
+      <h1>CS AI Schedule</h1>
+      <p class="subtitle">Computer Science &amp; AI Club</p>
     </header>
 
     <section id="scheduleView" class="view">
@@ -37,6 +38,7 @@
       <div class="news-card">
         <div class="news-card-header">
           <h2>News</h2>
+          <span id="newsCount" class="news-count"></span>
         </div>
         <div id="newsList" class="news-list"></div>
         <div id="newsEmpty" class="news-empty hidden">No news posted yet.</div>
