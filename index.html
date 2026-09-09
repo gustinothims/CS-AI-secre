@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Schedule</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <button id="prevMonth" class="nav-btn" aria-label="Previous month">&larr;</button>
+      <h1 id="monthLabel"></h1>
+      <button id="nextMonth" class="nav-btn" aria-label="Next month">&rarr;</button>
+    </header>
+
+    <div class="weekdays">
+      <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+    </div>
+
+    <div id="calendarGrid" class="grid"></div>
+  </div>
+
+  <div id="overlay" class="overlay hidden"></div>
+
+  <div id="detailPanel" class="panel hidden">
+    <div class="panel-header">
+      <h2 id="panelDate"></h2>
+      <button id="closePanel" class="close-btn" aria-label="Close">&times;</button>
+    </div>
+    <p id="panelText" class="panel-text"></p>
+    <div id="panelEmpty" class="panel-empty hidden">Nothing added for this date.</div>
+    <div class="panel-actions">
+      <button id="editBtn">Edit</button>
+      <button id="deleteBtn" class="danger hidden">Delete</button>
+    </div>
+  </div>
+
+  <div id="editPanel" class="panel hidden">
+    <div class="panel-header">
+      <h2 id="editDate"></h2>
+      <button id="closeEditPanel" class="close-btn" aria-label="Close">&times;</button>
+    </div>
+    <textarea id="editText" rows="6" placeholder="What was done on this date..."></textarea>
+    <div class="panel-actions">
+      <button id="saveBtn">Save</button>
+      <button id="cancelEditBtn">Cancel</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
