@@ -1,11 +1,11 @@
-const { kv } = require("@vercel/kv");
+const { readJSON, writeJSON } = require("./_blob");
 
 const PASSWORD = process.env.EDIT_PASSWORD || "CSAI.clubss";
-const KEY = "news:posts";
+const PATH = "data/news.json";
 
 module.exports = async (req, res) => {
   if (req.method === "GET") {
-    const posts = (await kv.get(KEY)) || [];
+    const posts = await readJSON(PATH, []);
     res.status(200).json(posts);
     return;
   }
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const posts = (await kv.get(KEY)) || [];
+    const posts = await readJSON(PATH, []);
     posts.unshift({
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       title: title.trim(),
@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
       createdAt: new Date().toISOString(),
     });
 
-    await kv.set(KEY, posts);
+    await writeJSON(PATH, posts);
     res.status(200).json(posts);
     return;
   }
@@ -47,14 +47,14 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const posts = (await kv.get(KEY)) || [];
+    const posts = await readJSON(PATH, []);
     const post = posts.find((p) => p.id === id);
     if (post) {
       post.title = title.trim();
       post.body = body.trim();
     }
 
-    await kv.set(KEY, posts);
+    await writeJSON(PATH, posts);
     res.status(200).json(posts);
     return;
   }
@@ -67,8 +67,8 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const posts = ((await kv.get(KEY)) || []).filter((p) => p.id !== id);
-    await kv.set(KEY, posts);
+    const posts = (await readJSON(PATH, [])).filter((p) => p.id !== id);
+    await writeJSON(PATH, posts);
     res.status(200).json(posts);
     return;
   }

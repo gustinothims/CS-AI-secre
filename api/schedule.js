@@ -1,11 +1,11 @@
-const { kv } = require("@vercel/kv");
+const { readJSON, writeJSON } = require("./_blob");
 
 const PASSWORD = process.env.EDIT_PASSWORD || "CSAI.clubss";
-const KEY = "schedule:entries";
+const PATH = "data/schedule.json";
 
 module.exports = async (req, res) => {
   if (req.method === "GET") {
-    const entries = (await kv.get(KEY)) || {};
+    const entries = await readJSON(PATH, {});
     res.status(200).json(entries);
     return;
   }
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const entries = (await kv.get(KEY)) || {};
+    const entries = await readJSON(PATH, {});
     const value = (description || "").trim();
 
     if (value) {
@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
       delete entries[date];
     }
 
-    await kv.set(KEY, entries);
+    await writeJSON(PATH, entries);
     res.status(200).json(entries);
     return;
   }
@@ -44,9 +44,9 @@ module.exports = async (req, res) => {
       return;
     }
 
-    const entries = (await kv.get(KEY)) || {};
+    const entries = await readJSON(PATH, {});
     delete entries[date];
-    await kv.set(KEY, entries);
+    await writeJSON(PATH, entries);
     res.status(200).json(entries);
     return;
   }
