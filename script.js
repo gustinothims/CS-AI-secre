@@ -1,7 +1,3 @@
-const EDIT_PASSWORD = "CSAI.clubss";
-const STORAGE_KEY = "scheduleEntries";
-const NEWS_KEY = "scheduleNews";
-
 /* Elements: shell */
 const todayLabel = document.getElementById("todayLabel");
 const scheduleView = document.getElementById("scheduleView");
@@ -63,30 +59,48 @@ let selectedKey = null;
 let activeTab = "schedule";
 let editingNewsId = null;
 
-/* ---------- storage ---------- */
+/* entries/posts are cached here after loading from the shared API,
+   so everyone who opens the site sees the same data. */
+let entriesCache = {};
+let newsCache = [];
 
-function loadEntries() {
+/* ---------- shared API ---------- */
+
+async function apiRequest(url, method = "GET", body) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    const res = await fetch(url, {
+      method,
+      headers: body ? { "Content-Type": "application/json" } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    let data = null;
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+    return { ok: res.ok, status: res.status, data };
   } catch {
-    return {};
+    return { ok: false, status: 0, data: null };
   }
 }
 
-function saveEntries(entries) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-}
+async function loadAll() {
+  const [scheduleRes, newsRes] = await Promise.all([apiRequest("/api/schedule"), apiRequest("/api/news")]);
 
-function loadNews() {
-  try {
-    return JSON.parse(localStorage.getItem(NEWS_KEY)) || [];
-  } catch {
-    return [];
+  if (scheduleRes.ok) entriesCache = scheduleRes.data || {};
+  if (newsRes.ok) newsCache = newsRes.data || [];
+
+  renderCalendar();
+  renderNews();
+
+  if (!scheduleRes.ok || !newsRes.ok) {
+    console.error("Could not load shared data from the server.");
   }
 }
 
-function saveNews(posts) {
-  localStorage.setItem(NEWS_KEY, JSON.stringify(posts));
+function promptPassword() {
+  return prompt("Enter password to save changes:");
 }
 
 /* ---------- helpers ---------- */
@@ -98,16 +112,6 @@ function dateKey(year, month, day) {
 function formatLabel(year, month, day) {
   const d = new Date(year, month, day);
   return d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-}
-
-function checkPassword() {
-  const input = prompt("Enter password to make changes:");
-  if (input === null) return false;
-  if (input !== EDIT_PASSWORD) {
-    alert("Incorrect password.");
-    return false;
-  }
-  return true;
 }
 
 function closeAllPanels() {
@@ -134,7 +138,6 @@ tabNews.addEventListener("click", () => setTab("news"));
 /* ---------- calendar ---------- */
 
 function renderCalendar() {
-  const entries = loadEntries();
   monthLabelText.textContent = new Date(viewYear, viewMonth).toLocaleDateString(undefined, {
     month: "long",
     year: "numeric",
@@ -168,7 +171,7 @@ function renderCalendar() {
       const isToday = isCurrentMonth && dayNum === today.getDate();
       if (isToday) cell.classList.add("today");
 
-      if (entries[key]) {
+      if (entriesCache[key]) {
         const dot = document.createElement("span");
         dot.className = "dot";
         cell.appendChild(dot);
@@ -193,8 +196,7 @@ function jumpToToday() {
 
 function openDetail(key, year, month, day) {
   selectedKey = key;
-  const entries = loadEntries();
-  const text = entries[key];
+  const text = entriesCache[key];
 
   panelDate.textContent = formatLabel(year, month, day);
 
@@ -214,11 +216,8 @@ function openDetail(key, year, month, day) {
 }
 
 function openEdit() {
-  if (!checkPassword()) return;
-
-  const entries = loadEntries();
   editDate.textContent = panelDate.textContent;
-  editText.value = entries[selectedKey] || "";
+  editText.value = entriesCache[selectedKey] || "";
 
   detailPanel.classList.add("hidden");
   editPanel.classList.remove("hidden");
@@ -226,42 +225,56 @@ function openEdit() {
 }
 
 function openQuickAddSchedule() {
-  if (!checkPassword()) return;
-
   const y = today.getFullYear();
   const m = today.getMonth();
   const d = today.getDate();
   selectedKey = dateKey(y, m, d);
 
-  const entries = loadEntries();
   editDate.textContent = formatLabel(y, m, d);
-  editText.value = entries[selectedKey] || "";
+  editText.value = entriesCache[selectedKey] || "";
 
   overlay.classList.remove("hidden");
   editPanel.classList.remove("hidden");
   editText.focus();
 }
 
-function saveEdit() {
-  const entries = loadEntries();
-  const value = editText.value.trim();
+async function saveEdit() {
+  const password = promptPassword();
+  if (password === null) return;
 
-  if (value) {
-    entries[selectedKey] = value;
-  } else {
-    delete entries[selectedKey];
+  const value = editText.value.trim();
+  const result = await apiRequest("/api/schedule", "POST", { date: selectedKey, description: value, password });
+
+  if (result.status === 401) {
+    alert("Incorrect password.");
+    return;
+  }
+  if (!result.ok) {
+    alert("Something went wrong saving. Please try again.");
+    return;
   }
 
-  saveEntries(entries);
+  entriesCache = result.data;
   renderCalendar();
   closeAllPanels();
 }
 
-function deleteEntry() {
-  if (!checkPassword()) return;
-  const entries = loadEntries();
-  delete entries[selectedKey];
-  saveEntries(entries);
+async function deleteEntry() {
+  const password = promptPassword();
+  if (password === null) return;
+
+  const result = await apiRequest("/api/schedule", "DELETE", { date: selectedKey, password });
+
+  if (result.status === 401) {
+    alert("Incorrect password.");
+    return;
+  }
+  if (!result.ok) {
+    alert("Something went wrong deleting. Please try again.");
+    return;
+  }
+
+  entriesCache = result.data;
   renderCalendar();
   closeAllPanels();
 }
@@ -303,20 +316,19 @@ function formatPostDate(iso) {
 }
 
 function renderNews() {
-  const posts = loadNews();
   newsList.innerHTML = "";
-  newsCount.textContent = `${posts.length} post${posts.length === 1 ? "" : "s"}`;
+  newsCount.textContent = `${newsCache.length} post${newsCache.length === 1 ? "" : "s"}`;
 
-  if (posts.length === 0) {
+  if (newsCache.length === 0) {
     newsEmpty.classList.remove("hidden");
     return;
   }
   newsEmpty.classList.add("hidden");
 
-  posts.forEach((post, index) => {
+  newsCache.forEach((post, index) => {
     const item = document.createElement("div");
     item.className = "news-item";
-    if (index === posts.length - 1) item.classList.add("last");
+    if (index === newsCache.length - 1) item.classList.add("last");
     item.innerHTML = `
       <div class="news-item-text">
         <div class="news-item-title"></div>
@@ -333,8 +345,7 @@ function renderNews() {
 }
 
 function openNewsDetail(id) {
-  const posts = loadNews();
-  const post = posts.find((p) => p.id === id);
+  const post = newsCache.find((p) => p.id === id);
   if (!post) return;
 
   editingNewsId = id;
@@ -347,10 +358,7 @@ function openNewsDetail(id) {
 }
 
 function openNewsEdit() {
-  if (!checkPassword()) return;
-
-  const posts = loadNews();
-  const post = posts.find((p) => p.id === editingNewsId);
+  const post = newsCache.find((p) => p.id === editingNewsId);
 
   newsEditHeading.textContent = "Edit post";
   newsTitleInput.value = post ? post.title : "";
@@ -362,8 +370,6 @@ function openNewsEdit() {
 }
 
 function openNewsAdd() {
-  if (!checkPassword()) return;
-
   editingNewsId = null;
   newsEditHeading.textContent = "Post news";
   newsTitleInput.value = "";
@@ -374,7 +380,7 @@ function openNewsAdd() {
   newsTitleInput.focus();
 }
 
-function saveNewsPost() {
+async function saveNewsPost() {
   const title = newsTitleInput.value.trim();
   const body = newsBodyInput.value.trim();
   if (!title || !body) {
@@ -382,32 +388,43 @@ function saveNewsPost() {
     return;
   }
 
-  const posts = loadNews();
+  const password = promptPassword();
+  if (password === null) return;
 
-  if (editingNewsId) {
-    const post = posts.find((p) => p.id === editingNewsId);
-    if (post) {
-      post.title = title;
-      post.body = body;
-    }
-  } else {
-    posts.unshift({
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      title,
-      body,
-      createdAt: new Date().toISOString(),
-    });
+  const result = editingNewsId
+    ? await apiRequest("/api/news", "PUT", { id: editingNewsId, title, body, password })
+    : await apiRequest("/api/news", "POST", { title, body, password });
+
+  if (result.status === 401) {
+    alert("Incorrect password.");
+    return;
+  }
+  if (!result.ok) {
+    alert("Something went wrong saving. Please try again.");
+    return;
   }
 
-  saveNews(posts);
+  newsCache = result.data;
   renderNews();
   closeAllPanels();
 }
 
-function deleteNewsPost() {
-  if (!checkPassword()) return;
-  const posts = loadNews().filter((p) => p.id !== editingNewsId);
-  saveNews(posts);
+async function deleteNewsPost() {
+  const password = promptPassword();
+  if (password === null) return;
+
+  const result = await apiRequest("/api/news", "DELETE", { id: editingNewsId, password });
+
+  if (result.status === 401) {
+    alert("Incorrect password.");
+    return;
+  }
+  if (!result.ok) {
+    alert("Something went wrong deleting. Please try again.");
+    return;
+  }
+
+  newsCache = result.data;
   renderNews();
   closeAllPanels();
 }
@@ -439,3 +456,4 @@ todayLabel.textContent = today.toLocaleDateString(undefined, {
 
 renderCalendar();
 renderNews();
+loadAll();
